@@ -17,11 +17,11 @@ public class Main {
         ConnectionManager connectionManager = ConnectionManager.getInstance();
         DBInit.init(connectionManager);
 
-        CourseDAO courseDAO = new CourseDAO();
+        CourseDAO courseDAO = CourseDAO.getInstance();
 
-        StudentDAO studentDAO = new StudentDAO();
+        StudentDAO studentDAO = StudentDAO.getInstance();
 
-        TeacherDAO teacherDAO = new TeacherDAO();
+        TeacherDAO teacherDAO = TeacherDAO.getInstance();
 
 
         TeacherOutDTO teacher = teacherDAO.findById(4L).get();
@@ -31,14 +31,13 @@ public class Main {
         for (CourseNameDTO c : teacher.getCourseList()) {
             System.out.println(c.getName());
         }
-//    }
 
-//
+
+
 //        List<TeacherOutDTO> teacherList = teacherDAO.findAll();
 //
 //        for (TeacherOutDTO t : teacherList) {
 //            System.out.println(t.getId() + " " + t.getName());
-//
 //
 //
 //            System.out.println("КУрсы:");
@@ -106,5 +105,5 @@ public class Main {
 //        }
 
 
-}
+    }
 }

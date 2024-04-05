@@ -2,6 +2,7 @@ package restByServlets.modelMapper;
 
 import restByServlets.model.Course;
 import restByServlets.model.Teacher;
+import restByServlets.modelDTO.CourseNameDTO;
 import restByServlets.modelDTO.TeacherNameDTO;
 import restByServlets.modelDTO.TeacherOutDTO;
 import restByServlets.modelDTO.TeacherUpdateDTO;
@@ -10,7 +11,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TeacherMapper {
-    private CourseMapper courseMapper = new CourseMapper();
+    private static TeacherMapper instance;
+    private static final CourseMapper courseMapper = CourseMapper.getInstance();
+
+    private TeacherMapper() {
+    }
+
+    public static synchronized TeacherMapper getInstance() {
+        if (instance == null) {
+            instance = new TeacherMapper();
+        }
+        return instance;
+    }
 
     /**
      * Преобразует входящий дто в модель
@@ -31,19 +43,11 @@ public class TeacherMapper {
      * @return
      */
     public Teacher mapUpdateToModel(TeacherUpdateDTO teacherUpdateDTO) {
-        List<Course> courseList = new ArrayList<>();
-        for (Long id : teacherUpdateDTO.getCourseIdList()) {
-            courseList.add(new Course(
-                    id,
-                    null,
-                    List.of(),
-                    List.of()
-            ));
-        }
+
         return new Teacher(
                 teacherUpdateDTO.getId(),
                 teacherUpdateDTO.getName(),
-                courseList
+                List.of()
                 );
     }
     /**

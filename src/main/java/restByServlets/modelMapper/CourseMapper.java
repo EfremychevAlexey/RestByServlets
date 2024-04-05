@@ -1,6 +1,7 @@
 package restByServlets.modelMapper;
 
 import restByServlets.model.Course;
+import restByServlets.modelDAO.CourseToTeacherDAO;
 import restByServlets.modelDTO.CourseNameDTO;
 import restByServlets.modelDTO.CourseOutDTO;
 import restByServlets.modelDTO.CourseUpdateDTO;
@@ -8,8 +9,19 @@ import restByServlets.modelDTO.CourseUpdateDTO;
 import java.util.List;
 
 public class CourseMapper {
-    private StudentMapper studentMapper = new StudentMapper();
-    private TeacherMapper teacherMapper = new TeacherMapper();
+    private static CourseMapper instance;
+    private final StudentMapper studentMapper = StudentMapper.getInstance();
+    private final TeacherMapper teacherMapper = TeacherMapper.getInstance();
+
+    private CourseMapper() {
+    }
+
+    public static synchronized CourseMapper getInstance() {
+        if (instance == null) {
+            instance = new CourseMapper();
+        }
+        return instance;
+    }
 
     /**
      * Преобразует входящий дто в модель

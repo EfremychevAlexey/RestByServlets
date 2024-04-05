@@ -8,12 +8,24 @@ import java.sql.*;
 /**
  * Класс описывает взаимодействие CourseTeacher entity с базой даннных
  */
-public class CourseToTeacherDAO{
+public class CourseToTeacherDAO {
+
+    private static CourseToTeacherDAO instance;
     private static final ConnectionManager connectionManager = ConnectionManager.getInstance();
     static final String SAVE_SQL = "INSERT INTO school.courses_teachers(course_id, teacher_id) VALUES(?, ?)";
     static final String DELETE_BY_COURSE_ID_SQL = "DELETE FROM school.courses_teachers WHERE course_id = ?";
     static final String DELETE_BY_TEACHER_ID_SQL = "DELETE FROM school.courses_teachers WHERE teacher_id = ?";
     static final String EXIST_BY_ID_SQL = "SELECT exists (SELECT 1 FROM school.courses_teachers WHERE id = ? LIMIT 1)";
+
+    private CourseToTeacherDAO() {
+    }
+
+    public static synchronized CourseToTeacherDAO getInstance() {
+        if (instance == null) {
+            instance = new CourseToTeacherDAO();
+        }
+        return instance;
+    }
 
     /**
      * Сохраняет запись в таблице связей запись на основании экземпляра класса

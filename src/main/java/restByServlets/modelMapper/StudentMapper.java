@@ -9,7 +9,19 @@ import restByServlets.modelDTO.StudentUpdateDTO;
 import java.util.List;
 
 public class StudentMapper {
-    CourseMapper courseMapper = new CourseMapper();
+
+    private static StudentMapper instance;
+    private static final CourseMapper courseMapper = CourseMapper.getInstance();
+
+    private StudentMapper() {
+    }
+
+    public static synchronized StudentMapper getInstance() {
+        if (instance == null) {
+            instance = new StudentMapper();
+        }
+        return instance;
+    }
 
     /**
      * Преобразует входящий дто в модель

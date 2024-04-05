@@ -10,6 +10,8 @@ import java.sql.*;
 import java.util.*;
 
 public class StudentDAO {
+
+    private static StudentDAO instance;
     private static ConnectionManager connectionManager = ConnectionManager.getInstance();
     private static final String SAVE_SQL = "INSERT INTO school.students(student_name) VALUES(?)";
     static final String UPDATE_SQL = "UPDATE school.students SET student_name = ? WHERE id = ?";
@@ -27,6 +29,16 @@ public class StudentDAO {
             LEFT JOIN school.courses AS c ON c.id = s.course_id
             """;
     static final String EXIST_BY_ID_SQL = "SELECT exists (SELECT 1 FROM school.students WHERE id = ? LIMIT 1)";
+
+    private StudentDAO() {
+    }
+
+    public static synchronized StudentDAO getInstance() {
+        if (instance == null) {
+            instance = new StudentDAO();
+        }
+        return instance;
+    }
 
     private static StudentOutDTO createStudent(ResultSet resultSet) throws SQLException {
         StudentOutDTO student = null;

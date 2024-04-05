@@ -11,16 +11,19 @@ import java.sql.*;
 import java.util.*;
 
 public class TeacherDAO {
+
+    private static TeacherDAO instance;
     private static ConnectionManager connectionManager = ConnectionManager.getInstance();
-    private static CourseToTeacherDAO courseToTeacherDAO = new CourseToTeacherDAO();
+    private static CourseToTeacherDAO courseToTeacherDAO = CourseToTeacherDAO.getInstance();
+
     private static final String SAVE_SQL = "INSERT INTO school.teacher(teacher_name) VALUES(?)";
     static final String UPDATE_SQL = "UPDATE school.teacher SET teacher_name = ? WHERE id = ?";
     static final String DELETE_SQL = "DELETE FROM school.teacher WHERE id = ?";
     static final String FIND_BY_ID_SQL = """
             SELECT t.id AS teacher_id, teacher_name, c.id as course_id, course_name
             FROM school.courses AS c
-            LEFT JOIN school.courses_teachers AS ct ON ct.course_id = c.id
-            LEFT JOIN school.teachers AS t ON t.id = ct.teacher_id
+            JOIN school.courses_teachers AS ct ON ct.course_id = c.id
+            RIGHT JOIN school.teachers AS t ON t.id = ct.teacher_id
             WHERE t.id = ?
             """;
     static final String FIND_ALL_SQL = """
@@ -32,15 +35,15 @@ public class TeacherDAO {
             """;
     static final String EXIST_BY_ID_SQL = "SELECT exists (SELECT 1 FROM school.teacher WHERE id = ? LIMIT 1)";
 
-//    private static TeacherOutDTO createTeacher(ResultSet resultSet) throws SQLException {
-//        TeacherOutDTO teacher;
-//        course = new Course(
-//                resultSet.getLong("id"),
-//                resultSet.getString("course_name"),
-//                null,
-//                null);
-//        return course;
-//    }
+    private TeacherDAO() {
+    }
+
+    public static synchronized TeacherDAO getInstance() {
+        if (instance == null) {
+            instance = new TeacherDAO();
+        }
+        return instance;
+    }
 
     /**
      * Создает новую запись в таблице

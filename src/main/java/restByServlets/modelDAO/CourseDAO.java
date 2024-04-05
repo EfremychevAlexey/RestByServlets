@@ -9,7 +9,10 @@ import java.sql.*;
 import java.util.*;
 
 public class CourseDAO {
+
+    private static CourseDAO instance;
     private static ConnectionManager connectionManager = ConnectionManager.getInstance();
+    private static CourseToTeacherDAO courseToTeacherDAO = CourseToTeacherDAO.getInstance();
     private static final String SAVE_SQL = "INSERT INTO school.courses(course_name) VALUES(?)";
     static final String UPDATE_SQL = "UPDATE school.courses SET course_name = ? WHERE id = ?";
     static final String DELETE_SQL = "DELETE FROM school.courses WHERE id = ?";
@@ -30,6 +33,16 @@ public class CourseDAO {
             LEFT JOIN school.teachers AS t ON t.id = ct.teacher_id
             """;
     static final String EXIST_BY_ID_SQL = "SELECT exists (SELECT 1 FROM school.courses WHERE id = ? LIMIT 1)";
+
+    private CourseDAO() {
+    }
+
+    public static synchronized CourseDAO getInstance() {
+        if (instance == null) {
+            instance = new CourseDAO();
+        }
+        return instance;
+    }
 
     private static Course createCourse(ResultSet resultSet) throws SQLException {
         Course course;
@@ -95,10 +108,9 @@ public class CourseDAO {
              PreparedStatement preparedStatement = connection.prepareStatement(DELETE_SQL)) {
             preparedStatement.setLong(1, id);
 
-            StudentDAO studentDAO = new StudentDAO();
+            StudentDAO studentDAO = StudentDAO.getInstance();
             studentDAO.deleteCourseIdByCourseId(id);
 
-            CourseToTeacherDAO courseToTeacherDAO = new CourseToTeacherDAO();
             courseToTeacherDAO.deleteByCourseId(id);
 
             deleteResult = preparedStatement.executeUpdate() > 0;

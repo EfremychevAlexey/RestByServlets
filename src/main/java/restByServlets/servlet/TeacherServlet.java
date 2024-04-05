@@ -5,10 +5,11 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.example.exception.NotFoundException;
-import org.example.service.TeacherService;
-import org.example.service.impl.TeacherServiceImpl;
-import org.example.servlet.dto.*;
+import restByServlets.exception.NotFoundException;
+import restByServlets.modelDTO.TeacherNameDTO;
+import restByServlets.modelDTO.TeacherOutDTO;
+import restByServlets.modelDTO.TeacherUpdateDTO;
+import restByServlets.service.TeacherService;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -21,7 +22,7 @@ import java.util.Optional;
  */
 @WebServlet(urlPatterns = {"/teacher/*"})
 public class TeacherServlet extends HttpServlet {
-    private final transient TeacherService teacherService = TeacherServiceImpl.getInstance();
+    private final transient TeacherService teacherService = new TeacherService();
     private final ObjectMapper objectMapper;
 
     public TeacherServlet() {
@@ -60,13 +61,13 @@ public class TeacherServlet extends HttpServlet {
             String[] pathPart = req.getPathInfo().split("/");
 
             if ("all".equals(pathPart[1])) {
-                List<TeacherOutGoingDto> teacherDto = teacherService.findAll();
+                List<TeacherOutDTO> teacherDto = teacherService.findAll();
                 resp.setStatus(HttpServletResponse.SC_OK);
                 responseAnswer = objectMapper.writeValueAsString(teacherDto);
             }
             else {
                 Long teacherId = Long.parseLong(pathPart[1]);
-                TeacherOutGoingDto teacherDto = teacherService.findById(teacherId);
+                TeacherOutDTO teacherDto = teacherService.findById(teacherId);
                 resp.setStatus(HttpServletResponse.SC_OK);
                 responseAnswer = objectMapper.writeValueAsString(teacherDto);
             }
@@ -125,10 +126,10 @@ public class TeacherServlet extends HttpServlet {
         String json = getJson(req);
 
         String responseAnswer = null;
-        Optional<TeacherIncomingDto> teacherResponse;
+        Optional<TeacherNameDTO> teacherResponse;
         try {
-            teacherResponse = Optional.ofNullable(objectMapper.readValue(json, TeacherIncomingDto.class));
-            TeacherIncomingDto teacher = teacherResponse.orElseThrow(IllegalArgumentException::new);
+            teacherResponse = Optional.ofNullable(objectMapper.readValue(json, TeacherNameDTO.class));
+            TeacherNameDTO teacher = teacherResponse.orElseThrow(IllegalArgumentException::new);
             responseAnswer = objectMapper.writeValueAsString(teacherService.save(teacher));
         } catch (Exception e) {
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -151,10 +152,10 @@ public class TeacherServlet extends HttpServlet {
         String json = getJson(req);
 
         String responseAnswer = "";
-        Optional<TeacherUpdateDto> teacherResponse;
+        Optional<TeacherUpdateDTO> teacherResponse;
         try {
-            teacherResponse = Optional.ofNullable(objectMapper.readValue(json, TeacherUpdateDto.class));
-            TeacherUpdateDto teacherUpdateDto = teacherResponse.orElseThrow(IllegalArgumentException::new);
+            teacherResponse = Optional.ofNullable(objectMapper.readValue(json, TeacherUpdateDTO.class));
+            TeacherUpdateDTO teacherUpdateDto = teacherResponse.orElseThrow(IllegalArgumentException::new);
             teacherService.update(teacherUpdateDto);
         } catch (NotFoundException e) {
             resp.setStatus(HttpServletResponse.SC_NOT_FOUND);

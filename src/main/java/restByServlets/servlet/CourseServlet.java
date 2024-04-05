@@ -5,11 +5,16 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import restByServlets.exception.NotFoundException;
+import restByServlets.modelDTO.CourseNameDTO;
+import restByServlets.modelDTO.CourseOutDTO;
+import restByServlets.modelDTO.CourseUpdateDTO;
 import restByServlets.service.CourseService;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -17,7 +22,7 @@ import java.util.Optional;
  */
 @WebServlet(urlPatterns = {"/course/*"})
 public class CourseServlet extends HttpServlet {
-    private final transient CourseService courseService = new CourseService();
+    private final transient CourseService courseService = CourseService.getInstance();
     private final ObjectMapper objectMapper;
 
     public CourseServlet() {
@@ -56,13 +61,13 @@ public class CourseServlet extends HttpServlet {
             String[] pathPart = req.getPathInfo().split("/");
 
             if ("all".equals(pathPart[1])) {
-                List<CourseOutGoingDto> courseDto = courseService.findAll();
+                List<CourseOutDTO> courseDto = courseService.findAll();
                 resp.setStatus(HttpServletResponse.SC_OK);
                 responseAnswer = objectMapper.writeValueAsString(courseDto);
             }
             else {
                 Long courseId = Long.parseLong(pathPart[1]);
-                CourseOutGoingDto courseDto = courseService.findById(courseId);
+                CourseOutDTO courseDto = courseService.findById(courseId);
                 resp.setStatus(HttpServletResponse.SC_OK);
                 responseAnswer = objectMapper.writeValueAsString(courseDto);
             }
@@ -121,10 +126,10 @@ public class CourseServlet extends HttpServlet {
         String json = getJson(req);
 
         String responseAnswer = null;
-        Optional<CourseIncomingDto> courseResponse;
+        Optional<CourseNameDTO> courseResponse;
         try {
-            courseResponse = Optional.ofNullable(objectMapper.readValue(json, CourseIncomingDto.class));
-            CourseIncomingDto course = courseResponse.orElseThrow(IllegalArgumentException::new);
+            courseResponse = Optional.ofNullable(objectMapper.readValue(json, CourseNameDTO.class));
+            CourseNameDTO course = courseResponse.orElseThrow(IllegalArgumentException::new);
             responseAnswer = objectMapper.writeValueAsString(courseService.save(course));
         } catch (Exception e) {
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -147,10 +152,10 @@ public class CourseServlet extends HttpServlet {
         String json = getJson(req);
 
         String responseAnswer = "";
-        Optional<CourseUpdateDto> courseResponse;
+        Optional<CourseUpdateDTO> courseResponse;
         try {
-            courseResponse = Optional.ofNullable(objectMapper.readValue(json, CourseUpdateDto.class));
-            CourseUpdateDto courseUpdateDto = courseResponse.orElseThrow(IllegalArgumentException::new);
+            courseResponse = Optional.ofNullable(objectMapper.readValue(json, CourseUpdateDTO.class));
+            CourseUpdateDTO courseUpdateDto = courseResponse.orElseThrow(IllegalArgumentException::new);
             courseService.update(courseUpdateDto);
         } catch (NotFoundException e) {
             resp.setStatus(HttpServletResponse.SC_NOT_FOUND);

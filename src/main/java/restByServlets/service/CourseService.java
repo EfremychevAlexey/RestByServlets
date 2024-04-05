@@ -7,6 +7,7 @@ import restByServlets.modelDTO.CourseNameDTO;
 import restByServlets.modelDTO.CourseOutDTO;
 import restByServlets.modelDTO.CourseUpdateDTO;
 import restByServlets.modelMapper.CourseMapper;
+import restByServlets.modelMapper.TeacherMapper;
 
 import java.util.List;
 import java.util.Optional;
@@ -16,8 +17,18 @@ import java.util.Optional;
  */
 public class CourseService {
     private static CourseService instance;
-    private static final CourseDAO courseDao = new CourseDAO();
-    private static final CourseMapper courseMapper = new CourseMapper();
+    private static final CourseDAO courseDao = CourseDAO.getInstance();
+    private static final CourseMapper courseMapper = CourseMapper.getInstance();
+
+    private CourseService() {
+    }
+
+    public static synchronized CourseService getInstance() {
+        if (instance == null) {
+            instance = new CourseService();
+        }
+        return instance;
+    }
 
     /**
      * Проверяем наличие записи в таблице по id

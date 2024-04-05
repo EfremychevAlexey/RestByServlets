@@ -7,6 +7,7 @@ import restByServlets.modelDTO.StudentNameDTO;
 import restByServlets.modelDTO.StudentOutDTO;
 import restByServlets.modelDTO.StudentUpdateDTO;
 import restByServlets.modelMapper.StudentMapper;
+import restByServlets.modelMapper.TeacherMapper;
 
 import java.util.List;
 
@@ -14,8 +15,18 @@ import java.util.List;
  * Совершает операции в таблице students
  */
 public class StudentService {
-    private static final StudentDAO studentDAO = new StudentDAO();
-    private static final StudentMapper studentMapper = new StudentMapper();
+
+    private static StudentService instance;
+    private static final StudentDAO studentDAO = StudentDAO.getInstance();
+    private static final StudentMapper studentMapper = StudentMapper.getInstance();
+
+
+    public static synchronized StudentService getInstance() {
+        if (instance == null) {
+            instance = new StudentService();
+        }
+        return instance;
+    }
 
     /**
      * Проверяем наличие записи в таблице по id

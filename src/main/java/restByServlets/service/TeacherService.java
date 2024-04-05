@@ -15,9 +15,17 @@ import java.util.Optional;
 
 public class TeacherService {
     private static TeacherService instance;
-    private static final TeacherDAO teacherDao = new TeacherDAO();
-    private static final CourseToTeacherDAO courseToTeacherDAO = new CourseToTeacherDAO();
-    private static final TeacherMapper teacherMapper = new TeacherMapper();
+    private static final TeacherDAO teacherDao = TeacherDAO.getInstance();
+    private static final CourseToTeacherDAO courseToTeacherDAO = CourseToTeacherDAO.getInstance();
+    private static final TeacherMapper teacherMapper = TeacherMapper.getInstance();
+
+
+    public static synchronized TeacherService getInstance() {
+        if (instance == null) {
+            instance = new TeacherService();
+        }
+        return instance;
+    }
 
     /**
      * Проверяем наличие записи в таблице по id
@@ -54,15 +62,6 @@ public class TeacherService {
      */
     public void update(TeacherUpdateDTO teacherUpdateDTO) throws NotFoundException {
         checkTeacherExist(teacherUpdateDTO.getId());
-
-        if (teacherUpdateDTO.getCourse() != null) {
-            CourseToTeacher courseToTeacher = new CourseToTeacher(
-                    null,
-                    teacherUpdateDTO.getCourse().getId(),
-                    teacherUpdateDTO.getId()
-            );
-            courseToTeacherDAO.save(courseToTeacher);
-        }
         teacherDao.update(teacherMapper.mapUpdateToModel(teacherUpdateDTO));
     }
 

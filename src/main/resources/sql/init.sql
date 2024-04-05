@@ -99,7 +99,8 @@ INSERT INTO school.courses (course_name) VALUES ('SQL');
 INSERT INTO school.teachers (teacher_name) VALUES ('Демидов Дмитрий');
 INSERT INTO school.teachers (teacher_name) VALUES ('Чайкина Ольга');
 INSERT INTO school.teachers (teacher_name) VALUES ('Дудин Виктор');
-INSERT INTO school.teachers (teacher_name) VALUES ('Agent Smit');
+INSERT INTO school.teachers (teacher_name) VALUES ('Agent Smith');
+INSERT INTO school.teachers (teacher_name) VALUES ('Agent Smith 2');
 
 INSERT INTO school.courses_teachers (course_id, teacher_id) VALUES ('1', '1');
 INSERT INTO school.courses_teachers (course_id, teacher_id) VALUES ('1', '2');
